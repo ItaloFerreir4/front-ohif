@@ -16,17 +16,20 @@
     "date-fns": "^2.30.0",
     "eslint": "8.40.0",
     "eslint-config-next": "13.4.1",
+    "framer-motion": "^10.12.10",
     "lodash": "^4.17.21",
     "lodash.get": "^4.4.2",
     "next": "13.4.1",
     "postcss": "8.4.23",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-modal": "^3.16.1",
     "tailwindcss": "3.3.2",
     "typescript": "5.0.4"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.194",
-    "@types/lodash.get": "^4.4.7"
+    "@types/lodash.get": "^4.4.7",
+    "@types/react-modal": "^3.16.0"
   }
 }

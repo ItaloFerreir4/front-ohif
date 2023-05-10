@@ -15,13 +15,15 @@ type Row = {
 
 const StudyTable = () => {
   const [rows, setRows] = useState<Row[]>([]);
-  const [value, setValue] = useState('');
+  const [valueName, setValueName] = useState('');
+  const [valueDescription, setValueDescription] = useState('');
+  const [valueDate, setValueDate] = useState('');
 
   useEffect(() => {
     const controller = new AbortController();
 
     const fetchData = async () => {
-      const query = `${Config.hostname}:${Config.port}/${Config.qido}/studies?includefield=00081030%2C00080060%2C00080020&PatientName=${value}`;
+      const query = `${Config.hostname}:${Config.port}/${Config.qido}/studies?includefield=00081030%2C00080060%2C00080020&PatientName=${valueName}&StudyDescription=${valueDescription}&StudyDate=${valueDate}`;
       const options = { signal: controller.signal };
 
       try {
@@ -50,16 +52,18 @@ const StudyTable = () => {
     return () => {
       controller.abort();
     };
-  }, [value]);
+  }, [valueName, valueDescription, valueDate]);
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Call fetchData again with new value
-    fetchData();
+  const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValueName(e.target.value);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
+  const handleChangeDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValueDescription(e.target.value);
+  };
+
+  const handleChangeDate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValueDate(e.target.value);
   };
 
   return (
@@ -74,15 +78,15 @@ const StudyTable = () => {
           <tr>
             <th>
               <label>Nome do paciente / MRN</label>
-              <input type="text" value={value} onChange={handleChange} />
+              <input type="text" value={valueName} onChange={handleChangeName} />
             </th>
             <th>
               <label>Descrição</label>
-              <input type="text" value={value} onChange={handleChange} />
+              <input type="text" value={valueDescription} onChange={handleChangeDescription} />
             </th>
             <th>
               <label>Data do estudo</label>
-              <input type="text" value={value} onChange={handleChange} />
+              <input type="text" value={valueDate} onChange={handleChangeDate} />
             </th>
           </tr>
         </thead>
