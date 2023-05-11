@@ -17,13 +17,14 @@ const StudyTable = () => {
   const [rows, setRows] = useState<Row[]>([]);
   const [valueName, setValueName] = useState('');
   const [valueDescription, setValueDescription] = useState('');
-  const [valueDate, setValueDate] = useState('');
+  const [valueDateInitial, setValueDateInitial] = useState('');
+  const [valueDateFinish, setValueDateFinish] = useState('');
 
   useEffect(() => {
     const controller = new AbortController();
 
     const fetchData = async () => {
-      const query = `${Config.hostname}:${Config.port}/${Config.qido}/studies?includefield=00081030%2C00080060%2C00080020&PatientName=${valueName}&StudyDescription=${valueDescription}&StudyDate=${valueDate}`;
+      const query = `${Config.hostname}:${Config.port}/${Config.qido}/studies?includefield=00081030%2C00080060%2C00080020&PatientName=${valueName}&StudyDescription=${valueDescription}${valueDateInitial == '' || valueDateFinish == ''? '': `&StudyDate=${dateQuery(valueDateInitial)}-${dateQuery(valueDateFinish)}`}`;
       const options = { signal: controller.signal };
 
       try {
@@ -52,7 +53,7 @@ const StudyTable = () => {
     return () => {
       controller.abort();
     };
-  }, [valueName, valueDescription, valueDate]);
+  }, [valueName, valueDescription, valueDateInitial, valueDateFinish]);
 
   const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValueName(e.target.value);
@@ -62,9 +63,18 @@ const StudyTable = () => {
     setValueDescription(e.target.value);
   };
 
-  const handleChangeDate = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValueDate(e.target.value);
+  const handleChangeDateInitial = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValueDateInitial(e.target.value);
   };
+
+  const handleChangeDateFinish = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValueDateFinish(e.target.value);
+  };
+
+  const clearInputDate = () => {
+    setValueDateInitial('');
+    setValueDateFinish('');
+  }
 
   return (
     <div className="content">
@@ -73,11 +83,15 @@ const StudyTable = () => {
         <span id="contStudy">{rows.length}</span>
       </div>
       <div className="table-head-background"></div>
+      <div className="study-list-header-mobile">
+        <label>Nome do Paciente</label>
+        <input type="text" value={valueName} onChange={handleChangeName} />
+      </div>
       <table className="study-list">
         <thead className="study-list-header">
-          <tr>
+          <tr className="study-list-header-desktop">
             <th>
-              <label>Nome do paciente / MRN</label>
+              <label>Nome do Paciente / MRN</label>
               <input type="text" value={valueName} onChange={handleChangeName} />
             </th>
             <th>
@@ -85,8 +99,21 @@ const StudyTable = () => {
               <input type="text" value={valueDescription} onChange={handleChangeDescription} />
             </th>
             <th>
-              <label>Data do estudo</label>
-              <input type="text" value={valueDate} onChange={handleChangeDate} />
+              <label>Data do Estudo</label>
+              <div className="date-range">
+                <div className="date-div-input">
+                  <input className="date-input" aria-label="Data Inicial" placeholder="Data Inicial" type="date" value={valueDateInitial} onChange={handleChangeDateInitial} />
+                </div>
+                <div>
+                  <svg className="date-arrow" focusable="false" viewBox="0 0 1000 1000"><path d="M694 242l249 250c12 11 12 21 1 32L694 773c-5 5-10 7-16 7s-11-2-16-7c-11-11-11-21 0-32l210-210H68c-13 0-23-10-23-23s10-23 23-23h806L662 275c-21-22 11-54 32-33z"></path></svg>
+                </div>
+                <div className="date-div-input">
+                  <input className="date-input" aria-label="Data Final" placeholder="Data Final" type="date" value={valueDateFinish} onChange={handleChangeDateFinish} />
+                </div>
+                <div onClick={clearInputDate}>
+                  <svg className="date-clear" focusable="false" viewBox="0 0 12 12"><path fillRule="evenodd" d="M11.53.47a.75.75 0 0 0-1.061 0l-4.47 4.47L1.529.47A.75.75 0 1 0 .468 1.531l4.47 4.47-4.47 4.47a.75.75 0 1 0 1.061 1.061l4.47-4.47 4.47 4.47a.75.75 0 1 0 1.061-1.061l-4.47-4.47 4.47-4.47a.75.75 0 0 0 0-1.061z"></path></svg>
+                </div>
+              </div>              
             </th>
           </tr>
         </thead>
@@ -113,13 +140,13 @@ const StudyTable = () => {
 
 export default StudyTable;
 
-function fetchData() {
-  throw new Error('Function not implemented.');
-}
-
 function redirectPage(id : any) {
   // redireciona para a página desejada usando o id
   window.location.href = `http://localhost:5001/viewer/${id}`;
+}
+
+function dateQuery(date: any){
+  return date.replaceAll('-', '');
 }
 
 function formatDate(dateString: string): string {
